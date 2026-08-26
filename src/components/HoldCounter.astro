@@ -171,7 +171,7 @@
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, var(--dusk), var(--dusk));
-    transition: width 0.01s linear;
+    transition: width 0.05s linear;
   }
 
   .horizon-caption {
@@ -298,7 +298,7 @@
     // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
     const DUSK = [58, 111, 120];   // --dusk
     const DAWN = [234, 182, 118];  // --dawn
-    const HORIZON_CAP_MS = 12000;  // full warmth reached at 12s held
+    const HORIZON_CAP_MS = 60000;  // full warmth reached at 60s held
 
     let pressCount = 0;
     let cumulativeMs = 0;
