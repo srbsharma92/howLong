@@ -1,0 +1,431 @@
+---
+// Press-and-hold timer. All state is client-side and in-memory only.
+---
+<div class="stage">
+  <div class="eyebrow">Manual timing · session log</div>
+  <h1>Hold Counter</h1>
+  <p class="subtitle">A quiet timer for deliberate pauses.</p>
+
+  <div class="panel">
+    <div class="readouts">
+      <div class="readout">
+        <div class="readout-label"><span class="dot" id="dot-last"></span>Last hold</div>
+        <div class="readout-value" id="val-last">0.00<span class="readout-unit">s</span></div>
+      </div>
+      <div class="readout">
+        <div class="readout-label"><span class="dot" id="dot-count"></span>Presses</div>
+        <div class="readout-value" id="val-count">000</div>
+      </div>
+      <div class="readout wide">
+        <div class="readout-label"><span class="dot" id="dot-total"></span>Total time this session</div>
+        <div class="readout-value" id="val-total">0.00<span class="readout-unit">s</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-zone">
+    <div class="horizon" id="horizon" aria-hidden="true">
+      <div class="horizon-fill" id="horizonFill"></div>
+    </div>
+    <span class="horizon-caption" id="horizonCaption">Hold builds toward first light</span>
+
+    <button class="push" id="pushBtn" aria-label="Press and hold to start timing">
+      <span class="ring"></span>
+    </button>
+    <div class="push-label" id="pushLabel">Press and hold</div>
+  </div>
+
+  <div class="footnote">
+    Everything here lives in this tab only — <button id="resetBtn" type="button">reset session</button>, or refresh the page to start clear.
+  </div>
+</div>
+
+<style>
+  .stage {
+    width: 100%;
+    max-width: 480px;
+    padding: 40px 20px 56px;
+  }
+
+  .eyebrow {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    font-size: clamp(26px, 6vw, 34px);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    margin: 8px 0 28px;
+    font-weight: 400;
+  }
+
+  .panel {
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.03) inset,
+      0 30px 60px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .readouts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .readout {
+    background: var(--well);
+    border: 1px solid var(--well-border);
+    border-radius: var(--radius-md);
+    padding: 14px 14px 12px;
+  }
+
+  .readout.wide { grid-column: 1 / -1; }
+
+  .readout-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted-dim);
+    box-shadow: none;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .dot.live {
+    background: var(--accent);
+    box-shadow: 0 0 8px 2px var(--accent-glow);
+  }
+
+  .readout-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: clamp(24px, 7vw, 30px);
+    color: var(--accent);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .readout.wide .readout-value {
+    font-size: clamp(28px, 8vw, 34px);
+  }
+
+  .readout-unit {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  .btn-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+  }
+
+  /* Signature element: a thin horizon line that warms from dusk teal
+     toward dawn gold as a hold lengthens — patience made visible. */
+  .horizon {
+    width: 100%;
+    max-width: 260px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--well);
+    border: 1px solid var(--well-border);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .horizon-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--dusk), var(--dusk));
+    transition: width 0.05s linear;
+  }
+
+  .horizon-caption {
+    font-size: 11px;
+    color: var(--muted-dim);
+    letter-spacing: 0.02em;
+    margin-bottom: 26px;
+  }
+
+  .push {
+    width: 148px;
+    height: 148px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    background: radial-gradient(circle at 35% 30%, #4a8b83, #2c5751 55%, #1c3b37 100%);
+    box-shadow:
+      0 8px 0 #14302c,
+      0 14px 28px rgba(0, 0, 0, 0.45),
+      inset 0 3px 6px rgba(255, 255, 255, 0.12),
+      inset 0 -8px 14px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+    touch-action: none;
+    user-select: none;
+    animation: breathe 5s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.08); }
+  }
+
+  .push:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 6px;
+  }
+
+  .push .ring {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-dim);
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+  }
+
+  .push.active {
+    animation: none;
+    transform: translateY(6px);
+    box-shadow:
+      0 2px 0 #14302c,
+      0 4px 10px rgba(0, 0, 0, 0.4),
+      inset 0 4px 10px rgba(0, 0, 0, 0.35),
+      inset 0 -4px 8px rgba(255, 255, 255, 0.06);
+  }
+
+  .push.active .ring {
+    opacity: 1;
+    transform: scale(1.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 16px 2px var(--accent-glow);
+  }
+
+  .push-label {
+    margin-top: 18px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    transition: color 0.15s ease;
+  }
+
+  .push-label.active { color: var(--accent); }
+
+  .footnote {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted-dim);
+    letter-spacing: 0.01em;
+    line-height: 1.6;
+  }
+
+  .footnote button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 12px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .footnote button:hover { color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .push { animation: none; }
+    .push, .push .ring, .horizon-fill { transition: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    const btn = document.getElementById('pushBtn');
+    const pushLabel = document.getElementById('pushLabel');
+    const valLast = document.getElementById('val-last');
+    const valCount = document.getElementById('val-count');
+    const valTotal = document.getElementById('val-total');
+    const dotLast = document.getElementById('dot-last');
+    const dotCount = document.getElementById('dot-count');
+    const dotTotal = document.getElementById('dot-total');
+    const resetBtn = document.getElementById('resetBtn');
+    const horizonFill = document.getElementById('horizonFill');
+    const horizonCaption = document.getElementById('horizonCaption');
+
+    // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
+    const DUSK = [58, 111, 120];   // --dusk
+    const DAWN = [234, 182, 118];  // --dawn
+    const HORIZON_CAP_MS = 12000;  // full warmth reached at 12s held
+
+    let pressCount = 0;
+    let cumulativeMs = 0;
+    let pressStart = null;
+    let rafId = null;
+    let activePointerId = null;
+
+    function formatSeconds(ms) {
+      const s = ms / 1000;
+      if (s < 60) return s.toFixed(2) + 's';
+      const mins = Math.floor(s / 60);
+      const secs = (s - mins * 60).toFixed(2).padStart(5, '0');
+      return mins + ':' + secs;
+    }
+
+    function lerpColor(a, b, t) {
+      const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
+      return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    }
+
+    function updateHorizon(heldMs) {
+      const t = Math.max(0, Math.min(1, heldMs / HORIZON_CAP_MS));
+      horizonFill.style.width = (t * 100).toFixed(1) + '%';
+      horizonFill.style.background = lerpColor(DUSK, DAWN, t);
+      if (heldMs === 0) {
+        horizonCaption.textContent = 'Hold builds toward first light';
+      } else if (t < 1) {
+        horizonCaption.textContent = 'Warming…';
+      } else {
+        horizonCaption.textContent = 'First light reached';
+      }
+    }
+
+    function renderStatic() {
+      valCount.textContent = String(pressCount).padStart(3, '0');
+      valTotal.innerHTML = formatSeconds(cumulativeMs);
+    }
+
+    function renderLastFinal(durationMs) {
+      valLast.innerHTML = formatSeconds(durationMs);
+    }
+
+    function tick() {
+      if (pressStart === null) return;
+      const now = performance.now();
+      const held = now - pressStart;
+      valLast.innerHTML = formatSeconds(held);
+      valTotal.innerHTML = formatSeconds(cumulativeMs + held);
+      updateHorizon(held);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startPress(e) {
+      if (pressStart !== null) return;
+      if (e.cancelable) e.preventDefault();
+      activePointerId = e.pointerId;
+      if (btn.setPointerCapture && e.pointerId !== undefined) {
+        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+      pressStart = performance.now();
+      btn.classList.add('active');
+      pushLabel.textContent = 'Holding…';
+      pushLabel.classList.add('active');
+      dotLast.classList.add('live');
+      dotTotal.classList.add('live');
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function endPress(e) {
+      if (pressStart === null) return;
+      if (e && e.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) return;
+      const durationMs = performance.now() - pressStart;
+      cumulativeMs += durationMs;
+      pressCount += 1;
+      pressStart = null;
+      activePointerId = null;
+
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+
+      btn.classList.remove('active');
+      pushLabel.textContent = 'Press and hold';
+      pushLabel.classList.remove('active');
+      dotLast.classList.remove('live');
+      dotTotal.classList.remove('live');
+      dotCount.classList.add('live');
+      setTimeout(() => dotCount.classList.remove('live'), 220);
+
+      renderLastFinal(durationMs);
+      renderStatic();
+
+      // Horizon eases back to rest rather than snapping.
+      horizonFill.style.transition = 'width 0.6s ease, background 0.6s ease';
+      updateHorizon(0);
+      setTimeout(() => { horizonFill.style.transition = 'width 0.05s linear'; }, 650);
+    }
+
+    btn.addEventListener('pointerdown', startPress);
+    btn.addEventListener('pointerup', endPress);
+    btn.addEventListener('pointercancel', endPress);
+    btn.addEventListener('lostpointercapture', endPress);
+
+    // Keyboard support: space/enter act as press-and-hold
+    let keyHeld = false;
+    btn.addEventListener('keydown', function (e) {
+      if ((e.code === 'Space' || e.code === 'Enter') && !keyHeld) {
+        keyHeld = true;
+        startPress({ preventDefault: () => {}, cancelable: false, pointerId: undefined });
+      }
+    });
+    btn.addEventListener('keyup', function (e) {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        keyHeld = false;
+        endPress({ pointerId: undefined });
+      }
+    });
+
+    resetBtn.addEventListener('click', function () {
+      pressCount = 0;
+      cumulativeMs = 0;
+      pressStart = null;
+      renderStatic();
+      valLast.innerHTML = '0.00<span class="readout-unit">s</span>';
+      updateHorizon(0);
+    });
+
+    renderStatic();
+    updateHorizon(0);
+  })();
+</script>
