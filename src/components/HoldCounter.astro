@@ -324,11 +324,11 @@
       horizonFill.style.width = (t * 100).toFixed(1) + '%';
       horizonFill.style.background = lerpColor(DUSK, DAWN, t);
       if (heldMs === 0) {
-        horizonCaption.textContent = 'Hold builds toward first light';
+        horizonCaption.textContent = 'Ray of Hope';
       } else if (t < 1) {
         horizonCaption.textContent = 'Warming…';
       } else {
-        horizonCaption.textContent = 'First light reached';
+        horizonCaption.textContent = 'Completed first minute !!';
       }
     }
 
