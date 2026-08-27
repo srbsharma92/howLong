@@ -18,7 +18,7 @@
       </label>
       <label class="field">
         <span class="field-label">Email</span>
-        <input type="email" id="userEmail" class="field-input" placeholder="theirEmail@example.com" autocomplete="email" />
+        <input type="email" id="userEmail" class="field-input" placeholder="their emailId" autocomplete="email" />
       </label>
     </div>
   </div>
@@ -483,13 +483,14 @@
         month: 'short',
         hour: '2-digit',
         minute: '2-digit',
+        second: '2-digit',
         hour12: false,
       }).formatToParts(date);
     
       const map = {};
       parts.forEach((p) => { map[p.type] = p.value; });
     
-      return `${weekday}, ${map.day} ${map.month}, ${map.hour}:${map.minute}`;
+      return `${weekday}, ${map.day} ${map.month}, ${map.hour}:${map.minute}:${map.second}`;
     }
     
     function tickClock() {
