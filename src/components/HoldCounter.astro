@@ -693,6 +693,61 @@
       return canvas;
     }
 
+    // Converts a canvas to a Blob via a Promise (canvas.toBlob is callback-based).
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas could not be converted to an image.'));
+        }, 'image/png');
+      });
+    }
+ 
+    // iOS Safari (and some Android browsers) ignore the <a download> attribute,
+    // so it silently opens the image instead of saving it. Web Share API with
+    // a file lets the user save straight from the native share sheet, which
+    // works reliably on mobile. Desktop keeps the classic <a download> flow,
+    // which still works fine there and needs no user gesture inside a promise.
+    async function saveOrShareImage(blob, filename) {
+      const file = new File([blob], filename, { type: 'image/png' });
+ 
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'Hold Counter',
+          });
+          return 'shared';
+        } catch (err) {
+          // User cancelled the share sheet — not an error, just stop here.
+          if (err && err.name === 'AbortError') return 'cancelled';
+          // Otherwise fall through to the other strategies below.
+        }
+      }
+ 
+      const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent);
+      const url = URL.createObjectURL(blob);
+ 
+      if (isIOS) {
+        // download attribute is unsupported on iOS Safari; opening the
+        // image in a new tab lets the user long-press it and choose
+        // "Save Image" or "Add to Photos" themselves.
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        return 'opened';
+      }
+ 
+      // Desktop and most Android browsers: normal anchor-download flow.
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      return 'downloaded';
+    }
+ 
     async function takeSnapshot() {
       snapshotBtn.disabled = true;
       const originalLabel = snapshotBtnLabel.textContent;
@@ -707,14 +762,18 @@
           useCORS: true,
         });
         stampTimestamp(canvas, scale);
-
-        const link = document.createElement('a');
+ 
         const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
-        link.download = `howLong-${fileStamp}.png`;
-        link.href = canvas.toDataURL('image/png');
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        const filename = `hold-counter-${fileStamp}-IST.png`;
+        const blob = await canvasToBlob(canvas);
+        const result = await saveOrShareImage(blob, filename);
+ 
+        if (result === 'opened') {
+          snapshotBtnLabel.textContent = 'Long-press image to save';
+          setTimeout(() => { snapshotBtnLabel.textContent = originalLabel; }, 2500);
+          snapshotBtn.disabled = false;
+          return;
+        }
       } catch (err) {
         console.error(err);
         alert('Could not capture a snapshot. Please try again.');
