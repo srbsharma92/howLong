@@ -142,7 +142,7 @@
 
   .details-fields {
     display: grid;
-    grid-template-columns: 0.7fr 1.3fr;
+    grid-template-columns: 0.8fr 1.2fr;
     gap: 12px;
   }
 
@@ -150,6 +150,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
   }
 
   .field-label {
@@ -619,44 +620,35 @@
       return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
     }
 
-    function drawRoundedRect(ctx, x, y, w, h, r) {
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + w, y, x + w, y + h, r);
-      ctx.arcTo(x + w, y + h, x, y + h, r);
-      ctx.arcTo(x, y + h, x, y, r);
-      ctx.arcTo(x, y, x + w, y, r);
-      ctx.closePath();
-    }
+
 
     function stampTimestamp(canvas, scale) {
       const ctx = canvas.getContext('2d');
       const timestamp = formatISTTimestamp(new Date());
       const holder = (userNameInput.value || '').trim();
-      const label = (holder ? holder + ' · ' : '') + timestamp + ' IST';
+      const label = (holder ? 'Held by ' + holder + ' · ' : 'Captured ') + timestamp + ' IST';
 
-      const fontSize = 15 * scale;
-      const paddingX = 14 * scale;
-      const paddingY = 9 * scale;
-      const margin = 16 * scale;
+      // A full-width watermark band using the site's own dusk → dawn
+      // gradient, so the stamp reads as part of the design, not a sticker.
+      const barH = Math.max(30 * scale, Math.round(canvas.height * 0.05));
 
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      grad.addColorStop(0, '#3a6f78');   // --dusk
+      grad.addColorStop(1, '#eab676');   // --dawn
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+
+      // hairline seam so the band reads as an edge, not an overlay
+      ctx.fillStyle = 'rgba(10, 20, 22, 0.45)';
+      ctx.fillRect(0, canvas.height - barH, canvas.width, Math.max(1, scale));
+
+      const fontSize = Math.max(11 * scale, barH * 0.4);
       ctx.font = `600 ${fontSize}px 'Space Grotesk', sans-serif`;
       ctx.textBaseline = 'middle';
-      const textWidth = ctx.measureText(label).width;
-      const boxW = textWidth + paddingX * 2;
-      const boxH = fontSize + paddingY * 2;
-      const x = canvas.width - boxW - margin;
-      const y = canvas.height - boxH - margin;
-
-      ctx.fillStyle = 'rgba(10, 20, 22, 0.78)';
-      ctx.strokeStyle = 'rgba(143, 216, 201, 0.35)';
-      ctx.lineWidth = 1 * scale;
-      drawRoundedRect(ctx, x, y, boxW, boxH, 8 * scale);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#eab676';
-      ctx.fillText(label, x + paddingX, y + boxH / 2 + 1);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#0a1416';
+      ctx.fillText(label, canvas.width / 2, canvas.height - barH / 2 + fontSize * 0.03);
+      ctx.textAlign = 'left';
       return canvas;
     }
 
