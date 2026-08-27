@@ -2,9 +2,26 @@
 // Press-and-hold timer. All state is client-side and in-memory only.
 ---
 <div class="stage">
-  <div class="eyebrow">Do you REALLY miss someone ?? </div>
-  <h1>How long.. can you miss ? </h1>
-  <p class="subtitle"> The most important thing you can give to someone is <br> "YOUR TIME"</p>
+  <div class="eyebrow">Manual timing · session log</div>
+  <h1>Hold Counter</h1>
+  <p class="subtitle">A quiet timer for deliberate pauses.</p>
+
+  <div class="panel details-panel">
+    <div class="details-header">
+      <span class="details-eyebrow">Who's holding</span>
+      <span class="details-optional">optional</span>
+    </div>
+    <div class="details-fields">
+      <label class="field">
+        <span class="field-label">Name</span>
+        <input type="text" id="userName" class="field-input" placeholder="Your name" autocomplete="name" />
+      </label>
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input type="email" id="userEmail" class="field-input" placeholder="you@example.com" autocomplete="email" />
+      </label>
+    </div>
+  </div>
 
   <div class="panel">
     <div class="readouts">
@@ -36,11 +53,24 @@
   </div>
 
   <div class="footnote">
-    Start over: <button id="resetBtn" type="button">reset session</button>, or refresh the page.
+    Everything here lives in this tab only — <button id="resetBtn" type="button">reset session</button>, or refresh the page to start clear.
+  </div>
+
+  <div class="snapshot-zone">
+    <button class="snapshot-btn" id="snapshotBtn" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 8.5C4 7.39543 4.89543 6.5 6 6.5H8.17157C8.70201 6.5 9.21071 6.28929 9.58579 5.91421L10.4142 5.08579C10.7893 4.71071 11.298 4.5 11.8284 4.5H12.1716C12.702 4.5 13.2107 4.71071 13.5858 5.08579L14.4142 5.91421C14.7893 6.28929 15.298 6.5 15.8284 6.5H18C19.1046 6.5 20 7.39543 20 8.5V17.5C20 18.6046 19.1046 19.5 18 19.5H6C4.89543 19.5 4 18.6046 4 17.5V8.5Z" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="12" cy="13" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      <span id="snapshotBtnLabel">Save snapshot</span>
+    </button>
+    <div class="snapshot-hint">Captures this card as an image, stamped with the time in IST.</div>
   </div>
 </div>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&display=swap');
+
   .stage {
     width: 100%;
     max-width: 480px;
@@ -82,6 +112,86 @@
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.03) inset,
       0 30px 60px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .details-panel {
+    margin-bottom: 14px;
+  }
+
+  .details-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .details-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .details-optional {
+    font-size: 11px;
+    color: var(--muted-dim);
+    font-style: italic;
+  }
+
+  .details-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-dim);
+  }
+
+  .field-input {
+    background: var(--well);
+    border: 1px solid var(--well-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 0;
+  }
+
+  .field-input::placeholder {
+    color: var(--muted-dim);
+    font-style: italic;
+    opacity: 0.75;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  @media (max-width: 380px) {
+    .details-fields {
+      grid-template-columns: 1fr;
+    }
   }
 
   .readouts {
@@ -275,6 +385,52 @@
 
   .footnote button:hover { color: var(--accent); }
 
+  .snapshot-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 18px;
+  }
+
+  .snapshot-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel-raised);
+    border: 1px solid var(--panel-border);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  }
+
+  .snapshot-btn svg { color: var(--accent); flex-shrink: 0; }
+
+  .snapshot-btn:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .snapshot-btn:active { transform: translateY(1px); }
+
+  .snapshot-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+  }
+
+  .snapshot-hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted-dim);
+    text-align: center;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .push { animation: none; }
     .push, .push .ring, .horizon-fill { transition: none; }
@@ -298,7 +454,7 @@
     // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
     const DUSK = [58, 111, 120];   // --dusk
     const DAWN = [234, 182, 118];  // --dawn
-    const HORIZON_CAP_MS = 60000;  // full warmth reached at 60s held
+    const HORIZON_CAP_MS = 12000;  // full warmth reached at 12s held
 
     let pressCount = 0;
     let cumulativeMs = 0;
@@ -324,11 +480,11 @@
       horizonFill.style.width = (t * 100).toFixed(1) + '%';
       horizonFill.style.background = lerpColor(DUSK, DAWN, t);
       if (heldMs === 0) {
-        horizonCaption.textContent = 'Ray of Hope';
+        horizonCaption.textContent = 'Hold builds toward first light';
       } else if (t < 1) {
         horizonCaption.textContent = 'Warming…';
       } else {
-        horizonCaption.textContent = 'Completed first minute !!';
+        horizonCaption.textContent = 'First light reached';
       }
     }
 
@@ -427,5 +583,112 @@
 
     renderStatic();
     updateHorizon(0);
+
+    // ---- Snapshot: capture the card as an image, stamped with IST time ----
+    const snapshotBtn = document.getElementById('snapshotBtn');
+    const snapshotBtnLabel = document.getElementById('snapshotBtnLabel');
+    const userNameInput = document.getElementById('userName');
+    const stageEl = document.querySelector('.stage');
+
+    function loadHtml2Canvas() {
+      if (window.html2canvas) return Promise.resolve(window.html2canvas);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        script.onload = () => resolve(window.html2canvas);
+        script.onerror = () => reject(new Error('Could not load snapshot library.'));
+        document.head.appendChild(script);
+      });
+    }
+
+    // Builds "YYYY-MM-DD HH:MM" in Asia/Kolkata regardless of the visitor's own timezone.
+    function formatISTTimestamp(date) {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).formatToParts(date);
+      const map = {};
+      parts.forEach((p) => { map[p.type] = p.value; });
+      return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function stampTimestamp(canvas, scale) {
+      const ctx = canvas.getContext('2d');
+      const timestamp = formatISTTimestamp(new Date());
+      const holder = (userNameInput.value || '').trim();
+      const label = (holder ? holder + ' · ' : '') + timestamp + ' IST';
+
+      const fontSize = 15 * scale;
+      const paddingX = 14 * scale;
+      const paddingY = 9 * scale;
+      const margin = 16 * scale;
+
+      ctx.font = `600 ${fontSize}px 'Space Grotesk', sans-serif`;
+      ctx.textBaseline = 'middle';
+      const textWidth = ctx.measureText(label).width;
+      const boxW = textWidth + paddingX * 2;
+      const boxH = fontSize + paddingY * 2;
+      const x = canvas.width - boxW - margin;
+      const y = canvas.height - boxH - margin;
+
+      ctx.fillStyle = 'rgba(10, 20, 22, 0.78)';
+      ctx.strokeStyle = 'rgba(143, 216, 201, 0.35)';
+      ctx.lineWidth = 1 * scale;
+      drawRoundedRect(ctx, x, y, boxW, boxH, 8 * scale);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#eab676';
+      ctx.fillText(label, x + paddingX, y + boxH / 2 + 1);
+      return canvas;
+    }
+
+    async function takeSnapshot() {
+      snapshotBtn.disabled = true;
+      const originalLabel = snapshotBtnLabel.textContent;
+      snapshotBtnLabel.textContent = 'Capturing…';
+      try {
+        const html2canvas = await loadHtml2Canvas();
+        const scale = Math.min(2, window.devicePixelRatio || 1) * 1.5;
+        const bg = getComputedStyle(document.body).getPropertyValue('background-color') || '#0e1b1d';
+        const canvas = await html2canvas(stageEl, {
+          backgroundColor: bg.trim() || '#0e1b1d',
+          scale,
+          useCORS: true,
+        });
+        stampTimestamp(canvas, scale);
+
+        const link = document.createElement('a');
+        const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
+        link.download = `hold-counter-${fileStamp}-IST.png`;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (err) {
+        console.error(err);
+        alert('Could not capture a snapshot. Please try again.');
+      } finally {
+        snapshotBtn.disabled = false;
+        snapshotBtnLabel.textContent = originalLabel;
+      }
+    }
+
+    snapshotBtn.addEventListener('click', takeSnapshot);
   })();
 </script>
