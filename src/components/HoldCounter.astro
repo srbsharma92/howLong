@@ -62,7 +62,7 @@
         <path d="M4 8.5C4 7.39543 4.89543 6.5 6 6.5H8.17157C8.70201 6.5 9.21071 6.28929 9.58579 5.91421L10.4142 5.08579C10.7893 4.71071 11.298 4.5 11.8284 4.5H12.1716C12.702 4.5 13.2107 4.71071 13.5858 5.08579L14.4142 5.91421C14.7893 6.28929 15.298 6.5 15.8284 6.5H18C19.1046 6.5 20 7.39543 20 8.5V17.5C20 18.6046 19.1046 19.5 18 19.5H6C4.89543 19.5 4 18.6046 4 17.5V8.5Z" stroke="currentColor" stroke-width="1.5"/>
         <circle cx="12" cy="13" r="3.5" stroke="currentColor" stroke-width="1.5"/>
       </svg>
-      <span id="snapshotBtnLabel">Save snapshot</span>
+      <span id="snapshotBtnLabel">Capture the Efforts</span>
     </button>
     <div class="snapshot-hint">Share with one, who matters ♥ </div>
   </div>
@@ -710,7 +710,7 @@
 
         const link = document.createElement('a');
         const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
-        link.download = `hold-counter-${fileStamp}-IST.png`;
+        link.download = `howLong-${fileStamp}.png`;
         link.href = canvas.toDataURL('image/png');
         document.body.appendChild(link);
         link.click();
