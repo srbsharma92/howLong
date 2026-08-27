@@ -34,7 +34,7 @@
         <div class="readout-value" id="val-count">000</div>
       </div>
       <div class="readout wide">
-        <div class="readout-label"><span class="dot" id="dot-total"></span>Total time this session</div>
+        <div class="readout-label"><span class="dot" id="dot-total"></span>Total time your heart missed ♥</div>
         <div class="readout-value" id="val-total">0.00<span class="readout-unit">s</span></div>
       </div>
     </div>
@@ -639,7 +639,7 @@
       ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
 
       // hairline seam so the band reads as an edge, not an overlay
-      ctx.fillStyle = 'rgba(10, 20, 22, 0.45)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.fillRect(0, canvas.height - barH, canvas.width, Math.max(1, scale));
 
       const fontSize = Math.max(11 * scale, barH * 0.4);
