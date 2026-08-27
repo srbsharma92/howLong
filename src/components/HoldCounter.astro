@@ -2,23 +2,23 @@
 // Press-and-hold timer. All state is client-side and in-memory only.
 ---
 <div class="stage">
-  <div class="eyebrow">Manual timing · session log</div>
-  <h1>Hold Counter</h1>
-  <p class="subtitle">A quiet timer for deliberate pauses.</p>
+  <div class="eyebrow">Do you REALLY miss someone ??</div>
+  <h1>How long.. can you miss ?</h1>
+  <p class="subtitle">Most important thing you can give to someone is<br>YOUR TIME</p>
 
   <div class="panel details-panel">
     <div class="details-header">
-      <span class="details-eyebrow">Who's holding</span>
+      <span class="details-eyebrow">Whom you miss</span>
       <span class="details-optional">optional</span>
     </div>
     <div class="details-fields">
       <label class="field">
         <span class="field-label">Name</span>
-        <input type="text" id="userName" class="field-input" placeholder="Your name" autocomplete="name" />
+        <input type="text" id="userName" class="field-input" placeholder="Name" autocomplete="name" />
       </label>
       <label class="field">
         <span class="field-label">Email</span>
-        <input type="email" id="userEmail" class="field-input" placeholder="you@example.com" autocomplete="email" />
+        <input type="email" id="userEmail" class="field-input" placeholder="theirEmail@example.com" autocomplete="email" />
       </label>
     </div>
   </div>
@@ -44,16 +44,16 @@
     <div class="horizon" id="horizon" aria-hidden="true">
       <div class="horizon-fill" id="horizonFill"></div>
     </div>
-    <span class="horizon-caption" id="horizonCaption">Hold builds toward first light</span>
+    <span class="horizon-caption" id="horizonCaption">Ray of Hope</span>
 
-    <button class="push" id="pushBtn" aria-label="Press and hold to start timing">
+    <button class="push" id="pushBtn" aria-label="Press and hold when you miss them">
       <span class="ring"></span>
     </button>
     <div class="push-label" id="pushLabel">Press and hold</div>
   </div>
 
   <div class="footnote">
-    Everything here lives in this tab only — <button id="resetBtn" type="button">reset session</button>, or refresh the page to start clear.
+    Staret over:<button id="resetBtn" type="button">reset session</button>, or refresh the page.
   </div>
 
   <div class="snapshot-zone">
@@ -454,7 +454,7 @@
     // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
     const DUSK = [58, 111, 120];   // --dusk
     const DAWN = [234, 182, 118];  // --dawn
-    const HORIZON_CAP_MS = 12000;  // full warmth reached at 12s held
+    const HORIZON_CAP_MS = 60000;  // full warmth reached at 60s held
 
     let pressCount = 0;
     let cumulativeMs = 0;
@@ -480,11 +480,11 @@
       horizonFill.style.width = (t * 100).toFixed(1) + '%';
       horizonFill.style.background = lerpColor(DUSK, DAWN, t);
       if (heldMs === 0) {
-        horizonCaption.textContent = 'Hold builds toward first light';
+        horizonCaption.textContent = 'Ray of Hope';
       } else if (t < 1) {
         horizonCaption.textContent = 'Warming…';
       } else {
-        horizonCaption.textContent = 'First light reached';
+        horizonCaption.textContent = 'Completed a minute !!';
       }
     }
 
