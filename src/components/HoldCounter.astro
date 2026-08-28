@@ -270,28 +270,37 @@
     padding-top: 30px;
   }
 
-  // Bouncing ball
+  /* Small & sweet bouncing ball, hopping along the full width of the
+     horizon line just above it. */
   .bounce-track {
-    width: 14px;
+    position: relative;
+    width: 100%;
+    max-width: 260px;
     height: 22px;
     margin-bottom: 6px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
   }
   
   .bounce-ball {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: var(--accent);
     box-shadow: 0 0 6px 1px var(--accent-glow);
-    animation: bounce 0.9s cubic-bezier(0.5, 0, 1, 0.5) infinite alternate;
+    animation:
+      bounce-hop 0.45s cubic-bezier(0.5, 0, 1, 0.5) infinite alternate,
+      bounce-travel 3.6s linear infinite alternate;
   }
   
   @keyframes bounce {
-    from { transform: translateY(0); }
-    to { transform: translateY(-14px); }
+    from { bottom: 0; }
+    to { bottom: 14px; }
+  }
+  @keyframes bounce-travel {
+    from { left: 0%; }
+    to { left: calc(100% - 8px); }
   }
   
   @media (prefers-reduced-motion: reduce) {
