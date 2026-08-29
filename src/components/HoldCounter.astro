@@ -194,6 +194,13 @@
     box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
+  /* CHANGED: visual lock state for the Name/Email inputs once frozen */
+  .field-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: var(--well);
+  }
+
   @media (max-width: 380px) {
     .details-fields {
       grid-template-columns: 1fr;
@@ -503,6 +510,10 @@
     const horizonFill = document.getElementById('horizonFill');
     const horizonCaption = document.getElementById('horizonCaption');
 
+    // CHANGED: moved up from the snapshot section so startPress() can lock these
+    const userNameInput = document.getElementById('userName');
+    const userEmailInput = document.getElementById('userEmail');
+
     // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
     const DUSK = [58, 111, 120];   // --dusk
     const DAWN = [234, 182, 118];  // --dawn
@@ -599,6 +610,11 @@
         try { btn.setPointerCapture(e.pointerId); } catch (err) {}
       }
       pressStart = performance.now();
+
+      // CHANGED: freeze the Name/Email fields the moment a hold begins
+      userNameInput.disabled = true;
+      userEmailInput.disabled = true;
+
       btn.classList.add('active');
       pushLabel.textContent = 'Holding…';
       pushLabel.classList.add('active');
@@ -663,6 +679,8 @@
       renderStatic();
       valLast.innerHTML = '0.00<span class="readout-unit">s</span>';
       updateHorizon(0);
+      // Note: Name/Email stay frozen after a reset too — "reset session"
+      // clears the counters, not who the session is dedicated to.
     });
 
     renderStatic();
@@ -671,8 +689,8 @@
     // ---- Snapshot: capture the card as an image, stamped with IST time ----
     const snapshotBtn = document.getElementById('snapshotBtn');
     const snapshotBtnLabel = document.getElementById('snapshotBtnLabel');
-    const userNameInput = document.getElementById('userName');
     const stageEl = document.querySelector('.stage');
+    // (userNameInput moved to the top of this script — CHANGED)
 
     function loadHtml2Canvas() {
       if (window.html2canvas) return Promise.resolve(window.html2canvas);
