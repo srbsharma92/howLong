@@ -9,7 +9,7 @@
   <div class="panel details-panel">
     <div class="details-header">
       <span class="details-eyebrow">Whom you miss</span>
-      <span class="details-optional">optional - its not saved</span>
+      <span class="details-optional">optional</span>
     </div>
     <div class="details-fields">
       <label class="field">
@@ -17,8 +17,8 @@
         <input type="text" id="userName" class="field-input" placeholder="Name" autocomplete="name" />
       </label>
       <label class="field">
-        <span class="field-label">Their ID (Insta ID/ WhatsApp/ Email)</span>
-        <input type="email" id="userEmail" class="field-input" placeholder="Any unique ID" autocomplete="email" />
+        <span class="field-label">Email</span>
+        <input type="email" id="userEmail" class="field-input" placeholder="their emailId" autocomplete="email" />
       </label>
     </div>
   </div>
@@ -68,6 +68,26 @@
       <span id="snapshotBtnLabel">Capture the Efforts</span>
     </button>
     <div class="snapshot-hint">Share with one, who matters ♥ </div>
+  </div>
+</div>
+
+<!-- NEW: crop-selection overlay, shown after "Capture the Efforts" is clicked -->
+<div class="crop-modal" id="cropModal" hidden>
+  <div class="crop-modal-inner">
+    <div class="crop-stage" id="cropStage">
+      <img id="cropImage" alt="Snapshot preview" draggable="false" />
+      <div class="crop-box" id="cropBox">
+        <div class="crop-handle" data-handle="nw"></div>
+        <div class="crop-handle" data-handle="ne"></div>
+        <div class="crop-handle" data-handle="sw"></div>
+        <div class="crop-handle" data-handle="se"></div>
+      </div>
+    </div>
+    <div class="crop-actions">
+      <button id="cropCancelBtn" type="button">Cancel</button>
+      <button id="cropConfirmBtn" type="button">Use this area</button>
+    </div>
+    <div class="crop-hint">Drag to select an area · drag a corner to resize · drag the box to move it</div>
   </div>
 </div>
 
@@ -194,7 +214,6 @@
     box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
-  /* CHANGED: visual lock state for the Name/Email inputs once frozen */
   .field-input:disabled {
     opacity: 0.55;
     cursor: not-allowed;
@@ -494,6 +513,110 @@
     .push { animation: none; }
     .push, .push .ring, .horizon-fill { transition: none; }
   }
+
+  /* NEW: crop-selection overlay */
+  .crop-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 12, 13, 0.88);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .crop-modal[hidden] { display: none; }
+
+  .crop-modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    max-width: 100%;
+  }
+
+  .crop-stage {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    max-width: 90vw;
+    max-height: 62vh;
+    touch-action: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  }
+
+  .crop-stage img {
+    display: block;
+    max-width: 90vw;
+    max-height: 62vh;
+    width: auto;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  .crop-box {
+    position: absolute;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 9999px rgba(6, 12, 13, 0.62);
+    cursor: move;
+    touch-action: none;
+  }
+
+  .crop-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 2px solid #0a1416;
+    border-radius: 50%;
+    touch-action: none;
+  }
+
+  .crop-handle[data-handle="nw"] { left: -9px; top: -9px; cursor: nwse-resize; }
+  .crop-handle[data-handle="ne"] { right: -9px; top: -9px; cursor: nesw-resize; }
+  .crop-handle[data-handle="sw"] { left: -9px; bottom: -9px; cursor: nesw-resize; }
+  .crop-handle[data-handle="se"] { right: -9px; bottom: -9px; cursor: nwse-resize; }
+
+  .crop-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .crop-actions button {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    border: 1px solid var(--panel-border);
+    background: var(--panel-raised);
+    color: var(--ink);
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .crop-actions button:active { transform: translateY(1px); }
+
+  #cropConfirmBtn {
+    background: var(--accent);
+    color: #0a1416;
+    border-color: var(--accent);
+  }
+
+  .crop-hint {
+    font-size: 11px;
+    color: var(--muted-dim);
+    text-align: center;
+    max-width: 320px;
+  }
 </style>
 
 <script>
@@ -510,7 +633,6 @@
     const horizonFill = document.getElementById('horizonFill');
     const horizonCaption = document.getElementById('horizonCaption');
 
-    // CHANGED: moved up from the snapshot section so startPress() can lock these
     const userNameInput = document.getElementById('userName');
     const userEmailInput = document.getElementById('userEmail');
 
@@ -611,7 +733,6 @@
       }
       pressStart = performance.now();
 
-      // CHANGED: freeze the Name/Email fields the moment a hold begins
       userNameInput.disabled = true;
       userEmailInput.disabled = true;
 
@@ -679,8 +800,8 @@
       renderStatic();
       valLast.innerHTML = '0.00<span class="readout-unit">s</span>';
       updateHorizon(0);
-      // Note: Name/Email stay frozen after a reset too — "reset session"
-      // clears the counters, not who the session is dedicated to.
+      // Name/Email stay frozen after a reset too — "reset session" clears
+      // the counters, not who the session is dedicated to.
     });
 
     renderStatic();
@@ -690,7 +811,6 @@
     const snapshotBtn = document.getElementById('snapshotBtn');
     const snapshotBtnLabel = document.getElementById('snapshotBtnLabel');
     const stageEl = document.querySelector('.stage');
-    // (userNameInput moved to the top of this script — CHANGED)
 
     function loadHtml2Canvas() {
       if (window.html2canvas) return Promise.resolve(window.html2canvas);
@@ -718,8 +838,6 @@
       parts.forEach((p) => { map[p.type] = p.value; });
       return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
     }
-
-
 
     function stampTimestamp(canvas, scale) {
       const ctx = canvas.getContext('2d');
@@ -751,7 +869,7 @@
       return canvas;
     }
 
-// Converts a canvas to a Blob via a Promise (canvas.toBlob is callback-based).
+    // Converts a canvas to a Blob via a Promise (canvas.toBlob is callback-based).
     function canvasToBlob(canvas) {
       return new Promise((resolve, reject) => {
         canvas.toBlob((blob) => {
@@ -810,7 +928,141 @@
       setTimeout(() => URL.revokeObjectURL(url), 60000);
       return 'downloaded';
     }
- 
+
+    // ---- NEW: crop-selection overlay logic ----
+    const cropModal = document.getElementById('cropModal');
+    const cropStage = document.getElementById('cropStage');
+    const cropImage = document.getElementById('cropImage');
+    const cropBox = document.getElementById('cropBox');
+    const cropCancelBtn = document.getElementById('cropCancelBtn');
+    const cropConfirmBtn = document.getElementById('cropConfirmBtn');
+
+    let cropRect = null; // { x, y, w, h } in CSS pixels relative to cropStage
+
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function setCropBox(x, y, w, h) {
+      const stageW = cropStage.clientWidth;
+      const stageH = cropStage.clientHeight;
+      w = clamp(w, 24, stageW);
+      h = clamp(h, 24, stageH);
+      x = clamp(x, 0, stageW - w);
+      y = clamp(y, 0, stageH - h);
+      cropRect = { x, y, w, h };
+      cropBox.style.left = x + 'px';
+      cropBox.style.top = y + 'px';
+      cropBox.style.width = w + 'px';
+      cropBox.style.height = h + 'px';
+    }
+
+    // Opens the crop overlay for a freshly captured (un-stamped) canvas.
+    // Resolves with { rect, stageWidth } on confirm, or null on cancel.
+    function openCropModal(canvas) {
+      return new Promise((resolve) => {
+        cropImage.src = canvas.toDataURL('image/png');
+
+        function finish(result) {
+          cropModal.hidden = true;
+          cropConfirmBtn.removeEventListener('click', onConfirm);
+          cropCancelBtn.removeEventListener('click', onCancel);
+          cropImage.onload = null;
+          resolve(result);
+        }
+        function onConfirm() {
+          finish({ rect: cropRect, stageWidth: cropStage.clientWidth });
+        }
+        function onCancel() {
+          finish(null);
+        }
+
+        cropConfirmBtn.addEventListener('click', onConfirm);
+        cropCancelBtn.addEventListener('click', onCancel);
+
+        cropImage.onload = function () {
+          cropModal.hidden = false;
+          // Default selection: the whole image, so "Use this area" with no
+          // adjustment behaves exactly like the old, uncropped capture.
+          requestAnimationFrame(() => {
+            setCropBox(0, 0, cropStage.clientWidth, cropStage.clientHeight);
+          });
+        };
+      });
+    }
+
+    // Drag state machine: draw a new box, move it, or resize from a corner.
+    let dragMode = null; // 'create' | 'move' | 'resize'
+    let dragHandle = null;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let boxAtDragStart = null;
+
+    function stagePoint(e) {
+      const rect = cropStage.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    cropStage.addEventListener('pointerdown', (e) => {
+      if (e.target.classList.contains('crop-handle')) return;
+      const p = stagePoint(e);
+      if (e.target === cropBox) {
+        dragMode = 'move';
+        boxAtDragStart = { ...cropRect, px: p.x, py: p.y };
+      } else {
+        dragMode = 'create';
+        dragOriginX = p.x;
+        dragOriginY = p.y;
+        setCropBox(p.x, p.y, 1, 1);
+      }
+      try { cropStage.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    cropBox.querySelectorAll('.crop-handle').forEach((handleEl) => {
+      handleEl.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        dragMode = 'resize';
+        dragHandle = handleEl.dataset.handle;
+        boxAtDragStart = { ...cropRect };
+        dragOriginX = e.clientX;
+        dragOriginY = e.clientY;
+        try { cropStage.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+    });
+
+    cropStage.addEventListener('pointermove', (e) => {
+      if (!dragMode) return;
+      if (dragMode === 'create') {
+        const p = stagePoint(e);
+        const x = Math.min(dragOriginX, p.x);
+        const y = Math.min(dragOriginY, p.y);
+        const w = Math.abs(p.x - dragOriginX);
+        const h = Math.abs(p.y - dragOriginY);
+        setCropBox(x, y, w, h);
+      } else if (dragMode === 'move') {
+        const p = stagePoint(e);
+        const dx = p.x - boxAtDragStart.px;
+        const dy = p.y - boxAtDragStart.py;
+        setCropBox(boxAtDragStart.x + dx, boxAtDragStart.y + dy, boxAtDragStart.w, boxAtDragStart.h);
+      } else if (dragMode === 'resize') {
+        const dx = e.clientX - dragOriginX;
+        const dy = e.clientY - dragOriginY;
+        let { x, y, w, h } = boxAtDragStart;
+        if (dragHandle.includes('e')) w = boxAtDragStart.w + dx;
+        if (dragHandle.includes('s')) h = boxAtDragStart.h + dy;
+        if (dragHandle.includes('w')) { x = boxAtDragStart.x + dx; w = boxAtDragStart.w - dx; }
+        if (dragHandle.includes('n')) { y = boxAtDragStart.y + dy; h = boxAtDragStart.h - dy; }
+        setCropBox(x, y, w, h);
+      }
+    });
+
+    function endDrag() {
+      dragMode = null;
+      dragHandle = null;
+      boxAtDragStart = null;
+    }
+    cropStage.addEventListener('pointerup', endDrag);
+    cropStage.addEventListener('pointercancel', endDrag);
+
+    // ---- Capture flow: full-page snapshot -> crop overlay -> stamp -> save/share ----
     async function takeSnapshot() {
       snapshotBtn.disabled = true;
       const originalLabel = snapshotBtnLabel.textContent;
@@ -819,18 +1071,47 @@
         const html2canvas = await loadHtml2Canvas();
         const scale = Math.min(2, window.devicePixelRatio || 1) * 1.5;
         const bg = getComputedStyle(document.body).getPropertyValue('background-color') || '#0e1b1d';
-        const canvas = await html2canvas(stageEl, {
+
+        // 1. Capture the whole card, un-stamped, at full resolution.
+        const fullCanvas = await html2canvas(stageEl, {
           backgroundColor: bg.trim() || '#0e1b1d',
           scale,
           useCORS: true,
         });
-        stampTimestamp(canvas, scale);
- 
+
+        snapshotBtn.disabled = false;
+        snapshotBtnLabel.textContent = originalLabel;
+
+        // 2. Let the user pick the area they want. Cancelling here aborts
+        //    the whole capture, so nothing gets saved/shared.
+        const selection = await openCropModal(fullCanvas);
+        if (!selection) return;
+
+        snapshotBtn.disabled = true;
+        snapshotBtnLabel.textContent = 'Capturing…';
+
+        // 3. Map the on-screen selection (CSS px) to the full-resolution canvas.
+        const factor = fullCanvas.width / selection.stageWidth;
+        const sx = selection.rect.x * factor;
+        const sy = selection.rect.y * factor;
+        const sw = selection.rect.w * factor;
+        const sh = selection.rect.h * factor;
+
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = Math.max(1, Math.round(sw));
+        croppedCanvas.height = Math.max(1, Math.round(sh));
+        croppedCanvas.getContext('2d').drawImage(
+          fullCanvas, sx, sy, sw, sh, 0, 0, croppedCanvas.width, croppedCanvas.height
+        );
+
+        // 4. Stamp the timestamp band onto the final, cropped image.
+        stampTimestamp(croppedCanvas, scale);
+
         const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
         const filename = `hold-counter-${fileStamp}-IST.png`;
-        const blob = await canvasToBlob(canvas);
+        const blob = await canvasToBlob(croppedCanvas);
         const result = await saveOrShareImage(blob, filename);
- 
+
         if (result === 'opened') {
           snapshotBtnLabel.textContent = 'Long-press image to save';
           setTimeout(() => { snapshotBtnLabel.textContent = originalLabel; }, 2500);
