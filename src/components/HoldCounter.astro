@@ -1000,7 +1000,7 @@
       const ctx = canvas.getContext('2d');
       const timestamp = formatISTTimestamp(new Date());
       const holder = (userNameInput.value || '').trim();
-      const label = 'Captured at' + timestamp + ' IST';
+      const label = 'Captured on ' + timestamp + ' IST';
 
       // A full-width watermark band using the site's own dusk → dawn
       // gradient, so the stamp reads as part of the design, not a sticker.
@@ -1239,7 +1239,7 @@
         const stageRectPre = stageEl.getBoundingClientRect();
         const clockRectPre = istClockEl.getBoundingClientRect();
         const defaultCropHeightRatio = clamp(
-          (clockRectPre.bottom - stageRectPre.top+14) / stageRectPre.height,
+          (clockRectPre.bottom - stageRectPre.top+18) / stageRectPre.height,
           0.05,
           1
         );
