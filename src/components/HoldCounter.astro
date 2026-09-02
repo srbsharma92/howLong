@@ -522,6 +522,12 @@
     .push, .push .ring, .horizon-fill { transition: none; }
   }
 
+  @media (hover: none) and (pointer: coarse) {
+    .push {
+      animation: none;
+    }
+  }
+
   /* NEW: crop-selection overlay */
   .crop-modal {
     position: fixed;
