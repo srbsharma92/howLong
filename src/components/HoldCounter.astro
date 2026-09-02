@@ -979,20 +979,21 @@
       });
     }
 
-    // Builds "YYYY-MM-DD HH:MM" in Asia/Kolkata regardless of the visitor's own timezone.
+    // Builds "DDMMM HH:MM" in Asia/Kolkata regardless of the visitor's own timezone.
     function formatISTTimestamp(date) {
-      const parts = new Intl.DateTimeFormat('en-CA', {
+      const parts = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Kolkata',
-        year: 'numeric',
-        month: '2-digit',
         day: '2-digit',
+        month: 'short',
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
       }).formatToParts(date);
+    
       const map = {};
       parts.forEach((p) => { map[p.type] = p.value; });
-      return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
+    
+      return `${map.day}${map.month} ${map.hour}:${map.minute} IST`;
     }
 
     function stampTimestamp(canvas, scale) {
@@ -1051,7 +1052,7 @@
         try {
           await navigator.share({
             files: [file],
-            title: 'Hold Counter',
+            title: 'How long.. I missed !!',
           });
           return 'shared';
         } catch (err) {
