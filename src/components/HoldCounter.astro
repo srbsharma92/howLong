@@ -360,25 +360,29 @@
     margin-bottom: 22px;
   }
 
-  .push {
-    width: 148px;
-    height: 148px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    position: relative;
-    background: radial-gradient(circle at 35% 30%, #4a8b83, #2c5751 55%, #1c3b37 100%);
-    box-shadow:
-      0 8px 0 #14302c,
-      0 14px 28px rgba(0, 0, 0, 0.45),
-      inset 0 3px 6px rgba(255, 255, 255, 0.12),
-      inset 0 -8px 14px rgba(0, 0, 0, 0.3);
-    transform: translateY(0);
-    transition: transform 0.06s ease, box-shadow 0.06s ease;
-    touch-action: none;
-    user-select: none;
-    animation: breathe 5s ease-in-out infinite;
-  }
+    .push {
+      width: 148px;
+      height: 148px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      background: radial-gradient(circle at 35% 30%, #4a8b83, #2c5751 55%, #1c3b37 100%);
+      box-shadow:
+        0 8px 0 #14302c,
+        0 14px 28px rgba(0, 0, 0, 0.45),
+        inset 0 3px 6px rgba(255, 255, 255, 0.12),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.3);
+      transform: translateY(0) translateZ(0);
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
+      touch-action: none;
+      user-select: none;
+      animation: breathe 5s ease-in-out infinite;
+      will-change: transform, filter;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      isolation: isolate;
+    }
 
   @keyframes breathe {
     0%, 100% { filter: brightness(1); }
@@ -391,18 +395,22 @@
   }
 
   .push .ring {
-    position: absolute;
-    inset: -10px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-dim);
-    opacity: 0;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    pointer-events: none;
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-dim);
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  will-change: opacity, transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
   }
 
   .push.active {
     animation: none;
-    transform: translateY(6px);
+    transform: translateY(6px) translateZ(0);
     box-shadow:
       0 2px 0 #14302c,
       0 4px 10px rgba(0, 0, 0, 0.4),
@@ -411,10 +419,10 @@
   }
 
   .push.active .ring {
-    opacity: 1;
-    transform: scale(1.1);
-    border-color: var(--accent);
-    box-shadow: 0 0 16px 2px var(--accent-glow);
+  opacity: 1;
+  transform: scale(1.1) translateZ(0);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px 2px var(--accent-glow);
   }
 
   .push-label {
