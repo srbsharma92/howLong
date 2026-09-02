@@ -1279,7 +1279,7 @@
         stampTimestamp(croppedCanvas, scale);
 
         const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
-        const filename = `howLong-${fileStamp}.png`;
+        const filename = `howLongCanU-${fileStamp}.png`;
         const blob = await canvasToBlob(croppedCanvas);
         const result = await saveOrShareImage(blob, filename);
 
