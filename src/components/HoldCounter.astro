@@ -1206,6 +1206,17 @@
         const scale = Math.min(2, window.devicePixelRatio || 1) * 1.5;
         const bg = getComputedStyle(document.body).getPropertyValue('background-color') || '#0e1b1d';
 
+        // Measure, before capture, how far down the card the IST timestamp
+        // ends — this becomes the default crop height (top of card through
+        // the datetime line), expressed as a fraction of the card's height.
+        const stageRectPre = stageEl.getBoundingClientRect();
+        const clockRectPre = istClockEl.getBoundingClientRect();
+        const defaultCropHeightRatio = clamp(
+          (clockRectPre.bottom - stageRectPre.top) / stageRectPre.height,
+          0.05,
+          1
+        );
+
         // 1. Capture the whole card, un-stamped, at full resolution.
         const fullCanvas = await html2canvas(stageEl, {
           backgroundColor: bg.trim() || '#0e1b1d',
