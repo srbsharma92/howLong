@@ -78,7 +78,13 @@
         <span class="donation-chevron" aria-hidden="true"></span>
       </summary>
       <div class="donation-content">
+          <a
+          href="upi://pay?pa=8588896360@upi&pn=Donation&cu=INR"
+          class="donation-image-link"
+          aria-label="Pay via UPI"
+            >
         <img src="/images/donation.jpeg" alt="Donation QR code" class="donation-image" loading="lazy" />
+          </a>
         <p class="donation-caption">To keep this site running for every Heart!!</p>
       </div>
     </details>
@@ -621,6 +627,11 @@
     border-radius: 8px;
     display: block;
     margin: 0 auto;
+  }
+
+  .donation-image-link:active {
+    transform: scale(0.98);
+    opacity: 0.9;
   }
 
   .donation-caption {
