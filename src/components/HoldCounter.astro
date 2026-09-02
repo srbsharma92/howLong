@@ -1087,7 +1087,7 @@
 
     // Opens the crop overlay for a freshly captured (un-stamped) canvas.
     // Resolves with { rect, stageWidth } on confirm, or null on cancel.
-    function openCropModal(canvas) {
+    function openCropModal(canvas, defaultHeightRatio) {
       return new Promise((resolve) => {
         cropImage.src = canvas.toDataURL('image/png');
 
@@ -1110,10 +1110,14 @@
 
         cropImage.onload = function () {
           cropModal.hidden = false;
-          // Default selection: the whole image, so "Use this area" with no
-          // adjustment behaves exactly like the old, uncropped capture.
+          // Default selection: full width, from the top of the card down
+          // through the IST datetime line — the user can still drag to
+          // include more (e.g. the donation section) or less.
           requestAnimationFrame(() => {
-            setCropBox(0, 0, cropStage.clientWidth, cropStage.clientHeight);
+            const stageW = cropStage.clientWidth;
+            const stageH = cropStage.clientHeight;
+            const ratio = defaultHeightRatio || 1;
+            setCropBox(0, 0, stageW, stageH * ratio);
           });
         };
       });
@@ -1196,7 +1200,7 @@
     async function takeSnapshot() {
       snapshotBtn.disabled = true;
       const originalLabel = snapshotBtnLabel.textContent;
-      snapshotBtnLabel.textContent = 'Capturing…';
+      snapshotBtnLabel.textContent = 'Check PopUp';
       try {
         const html2canvas = await loadHtml2Canvas();
         const scale = Math.min(2, window.devicePixelRatio || 1) * 1.5;
@@ -1214,7 +1218,7 @@
 
         // 2. Let the user pick the area they want. Cancelling here aborts
         //    the whole capture, so nothing gets saved/shared.
-        const selection = await openCropModal(fullCanvas);
+        const selection = await openCropModal(fullCanvas, defaultCropHeightRatio);
         if (!selection) return;
 
         snapshotBtn.disabled = true;
