@@ -102,6 +102,23 @@
           </a>
         <p class="donation-caption">To keep this site running for every Heart!!</p>
       </div>
+
+        <div class="donation-divider"><span>or</span></div>
+
+      
+        href="https://paypal.me/srbsharma92"
+        class="paypal-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Donate via PayPal"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M7 4h6.5c2.8 0 4.7 1.6 4.2 4.3-.5 3-2.6 4.5-5.6 4.5H9.8l-.9 5.2H5.5L7 4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M10.2 8h6.2c2.6 0 4.4 1.5 3.9 4.1-.5 2.8-2.5 4.2-5.3 4.2h-2.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" opacity="0.55"/>
+        </svg>
+        <span>Donate via PayPal</span>
+      </a>
+    </div>
     </details>
   </div>
 </div>
@@ -654,6 +671,54 @@
     font-size: 11px;
     color: var(--muted-dim);
   }
+
+  .donation-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0;
+    color: var(--muted-dim);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .donation-divider::before,
+  .donation-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--well-border);
+  }
+  
+  .paypal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--panel-raised);
+    border: 1px solid var(--panel-border);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  }
+  
+  .paypal-btn svg { color: var(--accent); flex-shrink: 0; }
+  
+  .paypal-btn:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+  
+  .paypal-btn:active { transform: translateY(1px); }
 
   @media (prefers-reduced-motion: reduce) {
     .donation-content { animation: none; }
