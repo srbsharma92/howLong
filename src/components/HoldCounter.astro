@@ -85,32 +85,34 @@
     <div class="snapshot-hint">Share with one, who matters ♥ </div>
   </div>
 
-  <!-- NEW: collapsible donation section (Option A — native <details>, no JS needed) -->
-  <div class="donation-content">
-    <a href="upi://pay?pa=soniamehta0301@okaxis&pn=Donation&cu=INR"
-       class="donation-image-link"
-       aria-label="Pay via UPI">
-      <img src="/images/donation.jpeg" alt="Donation QR code" class="donation-image" loading="lazy" />
-    </a>
-    <p class="donation-caption">To keep this site running for every Heart!!</p>
-  
-    <div class="donation-divider"><span>or</span></div>
-  
-    <a href="https://paypal.me/srbsharma92"
-       class="paypal-btn"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Donate via PayPal">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M7 4h6.5c2.8 0 4.7 1.6 4.2 4.3-.5 3-2.6 4.5-5.6 4.5H9.8l-.9 5.2H5.5L7 4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-        <path d="M10.2 8h6.2c2.6 0 4.4 1.5 3.9 4.1-.5 2.8-2.5 4.2-5.3 4.2h-2.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" opacity="0.55"/>
-      </svg>
-      <span>Donate via PayPal</span>
-    </a>
+  <!-- Collapsible donation section -->
+  <div class="donation-zone">
+    <details class="donation-section">
+      <summary>
+        <span class="donation-summary-text">♥ Support this page</span>
+        <span class="donation-chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="donation-content">
+        <a href="upi://pay?pa=soniamehta0301@okaxis&pn=Donation&cu=INR" class="donation-image-link" aria-label="Pay via UPI">
+          <img src="/images/donation.jpeg" alt="Donation QR code" class="donation-image" loading="lazy" />
+        </a>
+        <p class="donation-caption">To keep this site running for every Heart!!</p>
+
+        <div class="donation-divider"><span>or</span></div>
+
+        <a href="https://paypal.me/srbsharma92" class="paypal-btn" target="_blank" rel="noopener noreferrer" aria-label="Donate via PayPal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M7 4h6.5c2.8 0 4.7 1.6 4.2 4.3-.5 3-2.6 4.5-5.6 4.5H9.8l-.9 5.2H5.5L7 4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M10.2 8h6.2c2.6 0 4.4 1.5 3.9 4.1-.5 2.8-2.5 4.2-5.3 4.2h-2.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" opacity="0.55"/>
+          </svg>
+          <span>Donate via PayPal</span>
+        </a>
+      </div>
+    </details>
   </div>
 </div>
 
-<!-- NEW: crop-selection overlay, shown after "Capture the Efforts" is clicked -->
+<!-- Crop-selection overlay, shown after "Capture the Efforts" is clicked -->
 <div class="crop-modal" id="cropModal" hidden>
   <div class="crop-modal-inner">
     <div class="crop-stage" id="cropStage">
@@ -345,8 +347,6 @@
     user-select: none;
   }
 
-  /* Small & sweet bouncing ball, hopping along the full width of the
-     horizon line just above it. */
   .bounce-track {
     position: relative;
     width: 100%;
@@ -382,8 +382,6 @@
     .bounce-ball { animation: none; }
   }
 
-  /* Signature element: a thin horizon line that warms from dusk teal
-     toward dawn gold as a hold lengthens — patience made visible. */
   .horizon {
     width: 100%;
     max-width: 260px;
@@ -565,7 +563,6 @@
     text-align: center;
   }
 
-  /* NEW: collapsible donation section */
   .donation-zone {
     display: flex;
     justify-content: center;
@@ -722,7 +719,6 @@
     }
   }
 
-  /* NEW: crop-selection overlay */
   .crop-modal {
     position: fixed;
     inset: 0;
@@ -844,12 +840,10 @@
     const userNameInput = document.getElementById('userName');
     const userEmailInput = document.getElementById('userEmail');
 
-    // Colors for the dusk -> dawn interpolation (kept in sync with CSS tokens).
-    const DUSK = [58, 111, 120];   // --dusk
-    const DAWN = [234, 182, 118];  // --dawn
-    const HORIZON_CAP_MS = 60000;  // full warmth reached at 60s held
+    const DUSK = [58, 111, 120];
+    const DAWN = [234, 182, 118];
+    const HORIZON_CAP_MS = 60000;
     
-    // Datetime code piece -line number 471 to 500
     const istClockEl = document.getElementById('istClock');
 
     function formatISTClock(date) {
@@ -975,7 +969,6 @@
       renderLastFinal(durationMs);
       renderStatic();
 
-      // Horizon eases back to rest rather than snapping.
       horizonFill.style.transition = 'width 0.6s ease, background 0.6s ease';
       updateHorizon(0);
       setTimeout(() => { horizonFill.style.transition = 'width 0.05s linear'; }, 650);
@@ -986,7 +979,6 @@
     btn.addEventListener('pointercancel', endPress);
     btn.addEventListener('lostpointercapture', endPress);
 
-    // Keyboard support: space/enter act as press-and-hold
     let keyHeld = false;
     btn.addEventListener('keydown', function (e) {
       if ((e.code === 'Space' || e.code === 'Enter') && !keyHeld) {
@@ -1008,14 +1000,11 @@
       renderStatic();
       valLast.innerHTML = '0.00<span class="readout-unit">s</span>';
       updateHorizon(0);
-      // Name/Email stay frozen after a reset too — "reset session" clears
-      // the counters, not who the session is dedicated to.
     });
 
     renderStatic();
     updateHorizon(0);
 
-    // ---- Snapshot: capture the card as an image, stamped with IST time ----
     const snapshotBtn = document.getElementById('snapshotBtn');
     const snapshotBtnLabel = document.getElementById('snapshotBtnLabel');
     const stageEl = document.querySelector('.stage');
@@ -1031,7 +1020,6 @@
       });
     }
 
-    // Builds "DDMMM HH:MM" in Asia/Kolkata regardless of the visitor's own timezone.
     function formatISTTimestamp(date) {
       const parts = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Kolkata',
@@ -1054,17 +1042,14 @@
       const holder = (userNameInput.value || '').trim();
       const label = 'Captured on ' + timestamp + ' IST';
 
-      // A full-width watermark band using the site's own dusk → dawn
-      // gradient, so the stamp reads as part of the design, not a sticker.
       const barH = Math.max(30 * scale, Math.round(canvas.height * 0.05));
 
       const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-      grad.addColorStop(0, '#3a6f78');   // --dusk
-      grad.addColorStop(1, '#eab676');   // --dawn
+      grad.addColorStop(0, '#3a6f78');
+      grad.addColorStop(1, '#eab676');
       ctx.fillStyle = grad;
       ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
 
-      // hairline seam so the band reads as an edge, not an overlay
       ctx.fillStyle = 'rgba(10, 20, 22, 0.45)';
       ctx.fillRect(0, canvas.height - barH, canvas.width, Math.max(1, scale));
 
@@ -1078,7 +1063,6 @@
       return canvas;
     }
 
-    // Converts a canvas to a Blob via a Promise (canvas.toBlob is callback-based).
     function canvasToBlob(canvas) {
       return new Promise((resolve, reject) => {
         canvas.toBlob((blob) => {
@@ -1088,10 +1072,6 @@
       });
     }
  
-    // Only mobile browsers get the share-sheet flow. Some desktop browsers
-    // (Edge, macOS Safari) also expose navigator.share, but on desktop the
-    // classic <a download> already works and downloads instantly — no need
-    // to interrupt that with a share sheet.
     function isMobileDevice() {
       return /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent);
     }
@@ -1108,9 +1088,7 @@
           });
           return 'shared';
         } catch (err) {
-          // User cancelled the share sheet — not an error, just stop here.
           if (err && err.name === 'AbortError') return 'cancelled';
-          // Otherwise fall through to the other strategies below.
         }
       }
  
@@ -1118,16 +1096,11 @@
       const url = URL.createObjectURL(blob);
  
       if (mobile && isIOS) {
-        // download attribute is unsupported on iOS Safari; opening the
-        // image in a new tab lets the user long-press it and choose
-        // "Save Image" or "Add to Photos" themselves.
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 60000);
         return 'opened';
       }
  
-      // Desktop (and most Android browsers as a fallback): normal
-      // anchor-download flow — downloads immediately, same as before.
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
@@ -1138,7 +1111,6 @@
       return 'downloaded';
     }
 
-    // ---- NEW: crop-selection overlay logic ----
     const cropModal = document.getElementById('cropModal');
     const cropStage = document.getElementById('cropStage');
     const cropImage = document.getElementById('cropImage');
@@ -1146,7 +1118,7 @@
     const cropCancelBtn = document.getElementById('cropCancelBtn');
     const cropConfirmBtn = document.getElementById('cropConfirmBtn');
 
-    let cropRect = null; // { x, y, w, h } in CSS pixels relative to cropStage
+    let cropRect = null;
 
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
@@ -1164,8 +1136,6 @@
       cropBox.style.height = h + 'px';
     }
 
-    // Opens the crop overlay for a freshly captured (un-stamped) canvas.
-    // Resolves with { rect, stageWidth } on confirm, or null on cancel.
     function openCropModal(canvas, defaultHeightRatio) {
       return new Promise((resolve) => {
         cropImage.src = canvas.toDataURL('image/png');
@@ -1189,9 +1159,6 @@
 
         cropImage.onload = function () {
           cropModal.hidden = false;
-          // Default selection: full width, from the top of the card down
-          // through the IST datetime line — the user can still drag to
-          // include more (e.g. the donation section) or less.
           requestAnimationFrame(() => {
             const stageW = cropStage.clientWidth;
             const stageH = cropStage.clientHeight;
@@ -1202,8 +1169,7 @@
       });
     }
 
-    // Drag state machine: draw a new box, move it, or resize from a corner.
-    let dragMode = null; // 'create' | 'move' | 'resize'
+    let dragMode = null;
     let dragHandle = null;
     let dragOriginX = 0;
     let dragOriginY = 0;
@@ -1275,7 +1241,6 @@
     cropStage.addEventListener('pointerup', endDrag);
     cropStage.addEventListener('pointercancel', endDrag);
 
-    // ---- Capture flow: full-page snapshot -> crop overlay -> stamp -> save/share ----
     async function takeSnapshot() {
       snapshotBtn.disabled = true;
       const originalLabel = snapshotBtnLabel.textContent;
@@ -1285,9 +1250,6 @@
         const scale = Math.min(2, window.devicePixelRatio || 1) * 1.5;
         const bg = getComputedStyle(document.body).getPropertyValue('background-color') || '#0e1b1d';
 
-        // Measure, before capture, how far down the card the IST timestamp
-        // ends — this becomes the default crop height (top of card through
-        // the datetime line), expressed as a fraction of the card's height.
         const stageRectPre = stageEl.getBoundingClientRect();
         const clockRectPre = istClockEl.getBoundingClientRect();
         const defaultCropHeightRatio = clamp(
@@ -1296,7 +1258,6 @@
           1
         );
 
-        // 1. Capture the whole card, un-stamped, at full resolution.
         const fullCanvas = await html2canvas(stageEl, {
           backgroundColor: bg.trim() || '#0e1b1d',
           scale,
@@ -1306,15 +1267,12 @@
         snapshotBtn.disabled = false;
         snapshotBtnLabel.textContent = originalLabel;
 
-        // 2. Let the user pick the area they want. Cancelling here aborts
-        //    the whole capture, so nothing gets saved/shared.
         const selection = await openCropModal(fullCanvas, defaultCropHeightRatio);
         if (!selection) return;
 
         snapshotBtn.disabled = true;
         snapshotBtnLabel.textContent = 'Capturing…';
 
-        // 3. Map the on-screen selection (CSS px) to the full-resolution canvas.
         const factor = fullCanvas.width / selection.stageWidth;
         const sx = selection.rect.x * factor;
         const sy = selection.rect.y * factor;
@@ -1328,7 +1286,6 @@
           fullCanvas, sx, sy, sw, sh, 0, 0, croppedCanvas.width, croppedCanvas.height
         );
 
-        // 4. Stamp the timestamp band onto the final, cropped image.
         stampTimestamp(croppedCanvas, scale);
 
         const fileStamp = formatISTTimestamp(new Date()).replace(/[: ]/g, '-');
